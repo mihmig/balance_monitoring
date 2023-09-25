@@ -3,6 +3,7 @@
 
 import os
 import re
+import time
 import temp
 import argparse
 import requests
@@ -21,9 +22,12 @@ parser.add_argument("-l", "--login", dest="login", required=True, help="Login")
 parser.add_argument("-p", "--password", dest="password", required=True, type=str, help="Password")
 parser.add_argument("-c", "--chat", dest="chat_id", required=True, type=int, help="Telegram chat id")
 parser.add_argument("-t", "--token", dest="bot_token", required=True, type=str, help="Telegram bot token")
-parser.add_argument("-e", "--headless", action='store_true', dest="headless", required=False, help="Enable headless mode (default)")
-parser.add_argument("-d", "--debug", action='store_true', dest="debug", required=False, default=False, help="Enable debug (default: False)")
-parser.add_argument("-w", "--wait", dest="wait", required=False, type=int, default=10, help="Wait timeout in seconds (default: 10)")
+parser.add_argument("-e", "--headless", action='store_true', dest="headless", required=False,
+                    help="Enable headless mode (default)")
+parser.add_argument("-d", "--debug", action='store_true', dest="debug", required=False, default=False,
+                    help="Enable debug (default: False)")
+parser.add_argument("-w", "--wait", dest="wait", required=False, type=int, default=10,
+                    help="Wait timeout in seconds (default: 10)")
 args = parser.parse_args()
 
 
@@ -36,11 +40,16 @@ def send_to_tg(chat_id: int, text: str):
     }
     requests.post('https://api.telegram.org/bot' + args.bot_token + '/sendMessage', json=json_data)
 
+
 def get_accums(number: str, url: str) -> str:
     res = f"Номер <b>{number}:</b>\n"
     webdriver.get(url)
-    webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S")+".png")
+    webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S") + ".png")
+    time.sleep(10)  # Ждём прогрузки страницы
     items = webdriver.find_elements(By.XPATH,'//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
+    if len(items) < 2:
+        send_to_tg(47254369, f"Не удалось найти элементы с остатками для номера {number}")
+        quit(-4)
     for item in items:
         parts = item.text.split('\n')
         if "Мобильная связь" in parts[0]:
@@ -51,6 +60,7 @@ def get_accums(number: str, url: str) -> str:
             res = f"{res}\nОсталось {matches[0]} SMS"
     return res
 
+
 try:
     options = webdriver.FirefoxOptions()
     if args.headless:
@@ -58,7 +68,7 @@ try:
     options.add_argument("--width=1240")
     options.add_argument("--height=900")
     driverService = Service(log_path=os.path.devnull)
-    webdriver = webdriver.Firefox(options = options, service=driverService)
+    webdriver = webdriver.Firefox(options=options, service=driverService)
     webdriver.implicitly_wait(args.wait)  # Время ожидания загрузки страницы, поиска элементов
 except Exception as e:
     send_to_tg(47254369, f'{__file__}: Error while creating webdriver: {str(e)}')
@@ -72,11 +82,13 @@ try:
     loginElement.send_keys(args.login)
     passwordElement = webdriver.find_element(By.ID, "loginFormB2C:loginForm:passwordPwd")
     passwordElement.send_keys(args.password)
-    b = webdriver.find_element(By.XPATH,"//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
+    b = webdriver.find_element(By.XPATH,
+                               "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
     b.click()
 
     message = get_accums("+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
-    message = message + "\n\n" + get_accums("+7 964-296-7425", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
+    message = message + "\n\n" + get_accums("+7 964-296-7425",
+                                            "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
 
 
 except Exception as e:
@@ -89,11 +101,11 @@ if args.debug:
     print(message)
 try:
     response = requests.post(
-            f"https://api.telegram.org/bot{args.bot_token}/sendMessage",
-            params={"chat_id": args.chat_id,
-                    'text': message,
-                    'parse_mode': 'html'}
-        )
+        f"https://api.telegram.org/bot{args.bot_token}/sendMessage",
+        params={"chat_id": args.chat_id,
+                'text': message,
+                'parse_mode': 'html'}
+    )
 except Exception as e:
     print(f'Error while sending to telegram: {str(e)}')
     quit(-3)
