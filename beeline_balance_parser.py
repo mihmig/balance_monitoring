@@ -82,13 +82,11 @@ try:
     loginElement.send_keys(args.login)
     passwordElement = webdriver.find_element(By.ID, "loginFormB2C:loginForm:passwordPwd")
     passwordElement.send_keys(args.password)
-    b = webdriver.find_element(By.XPATH,
-                               "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
+    b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
     b.click()
 
     message = get_accums("+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
-    message = message + "\n\n" + get_accums("+7 964-296-7425",
-                                            "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
+    message = message + "\n\n" + get_accums("+7 964-296-7425", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
 
 
 except Exception as e:
@@ -99,13 +97,10 @@ except Exception as e:
     quit(-2)
 if args.debug:
     print(message)
+
+
 try:
-    response = requests.post(
-        f"https://api.telegram.org/bot{args.bot_token}/sendMessage",
-        params={"chat_id": args.chat_id,
-                'text': message,
-                'parse_mode': 'html'}
-    )
+    send_to_tg(args.chat_id, message)
 except Exception as e:
     print(f'Error while sending to telegram: {str(e)}')
     quit(-3)
