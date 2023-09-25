@@ -6,6 +6,7 @@ import re
 import temp
 import argparse
 import requests
+from datetime import datetime
 import logging
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -38,6 +39,7 @@ def send_to_tg(chat_id: int, text: str):
 def get_accums(number: str, url: str) -> str:
     res = f"Номер <b>{number}:</b>\n"
     webdriver.get(url)
+    webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S")+".png")
     items = webdriver.find_elements(By.XPATH,'//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
     for item in items:
         parts = item.text.split('\n')
