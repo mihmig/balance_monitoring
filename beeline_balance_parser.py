@@ -48,7 +48,7 @@ def get_accums(number: str, url: str) -> str:
     webdriver.get(url)
 
     # Ждём загрузки страницы
-    time.sleep(10)
+    time.sleep(30)
     # WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
 
     items = webdriver.find_elements(By.XPATH,'//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
@@ -92,7 +92,7 @@ try:
     b.click()
 
     # Ждём загрузки страницы
-    time.sleep(10)
+    time.sleep(30)
     # user_info = EC.presence_of_element_located((By.XPATH,"//div[contains(@class,'user-name')]"))
     # WebDriverWait(webdriver, args.wait).until(user_info)
 
