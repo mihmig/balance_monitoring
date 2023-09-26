@@ -44,10 +44,10 @@ def send_to_tg(chat_id: int, text: str):
 def get_accums(number: str, url: str) -> str:
     res = f"Номер <b>{number}:</b>\n"
     webdriver.get(url)
-    webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S") + ".png")
     time.sleep(10)  # Ждём прогрузки страницы
     items = webdriver.find_elements(By.XPATH,'//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
     if len(items) < 2:
+        webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S") + ".png")
         send_to_tg(47254369, f"Не удалось найти элементы с остатками для номера {number}")
         quit(-4)
     for item in items:
