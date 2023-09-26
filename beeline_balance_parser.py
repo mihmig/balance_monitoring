@@ -84,6 +84,7 @@ try:
     passwordElement.send_keys(args.password)
     b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
     b.click()
+    webdriver.find_element(By.XPATH,"//div[contains(@class,'user-name')]")
 
     message = get_accums("+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
     message = message + "\n\n" + get_accums("+7 964-296-7425", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
