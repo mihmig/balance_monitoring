@@ -12,6 +12,8 @@ import logging
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -44,6 +46,10 @@ def send_to_tg(chat_id: int, text: str):
 def get_accums(number: str, url: str) -> str:
     res = f"Номер <b>{number}:</b>\n"
     webdriver.get(url)
+
+    # Ждём загрузки страницы
+    WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
+
     time.sleep(10)  # Ждём прогрузки страницы
     items = webdriver.find_elements(By.XPATH,'//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
     if len(items) < 2:
@@ -84,7 +90,11 @@ try:
     passwordElement.send_keys(args.password)
     b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
     b.click()
-    webdriver.find_element(By.XPATH,"//div[contains(@class,'user-name')]")
+
+    # Ждём загрузки страницы
+    user_info = EC.presence_of_element_located((By.XPATH,"//div[contains(@class,'user-name')]"))
+    WebDriverWait(webdriver, args.wait).until(user_info)
+
 
     message = get_accums("+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
     message = message + "\n\n" + get_accums("+7 964-296-7425", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
