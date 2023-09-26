@@ -48,9 +48,9 @@ def get_accums(number: str, url: str) -> str:
     webdriver.get(url)
 
     # Ждём загрузки страницы
-    WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
+    time.sleep(10)
+    # WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
 
-    time.sleep(10)  # Ждём прогрузки страницы
     items = webdriver.find_elements(By.XPATH,'//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
     if len(items) < 2:
         webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S") + ".png")
@@ -92,8 +92,9 @@ try:
     b.click()
 
     # Ждём загрузки страницы
-    user_info = EC.presence_of_element_located((By.XPATH,"//div[contains(@class,'user-name')]"))
-    WebDriverWait(webdriver, args.wait).until(user_info)
+    time.sleep(10)
+    # user_info = EC.presence_of_element_located((By.XPATH,"//div[contains(@class,'user-name')]"))
+    # WebDriverWait(webdriver, args.wait).until(user_info)
 
 
     message = get_accums("+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
