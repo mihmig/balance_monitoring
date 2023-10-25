@@ -1,5 +1,5 @@
 # Вход в ЛК Beeline и получение информации об остатках минут и СМС.
-# Отправка полученной информации Телеграм
+# Отправка полученной информации в Телеграм
 
 import os
 import re
@@ -12,8 +12,8 @@ import logging
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from retrying import retry
+from selenium.webdriver.firefox.webdriver import WebDriver
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -43,15 +43,10 @@ def send_to_tg(chat_id: int, text: str):
     requests.post('https://api.telegram.org/bot' + args.bot_token + '/sendMessage', json=json_data)
 
 
-def get_accums(number: str, url: str) -> str:
-    res = f"Номер <b>{number}:</b>\n"
-    webdriver.get(url)
-
-    # Ждём загрузки страницы
-    time.sleep(30)
-    # WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
-
-    items = webdriver.find_elements(By.XPATH,'//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
+@retry(stop_max_attempt_number=10, wait_fixed=5000)
+def get_data(driver: WebDriver, number: str) -> str:
+    res = ""
+    items = webdriver.find_elements(By.XPATH, '//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
     if len(items) < 2:
         webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S") + ".png")
         send_to_tg(47254369, f"Не удалось найти элементы с остатками для номера {number}")
@@ -64,6 +59,16 @@ def get_accums(number: str, url: str) -> str:
         if "SMS" in parts[0]:
             matches = re.findall(r"\D(\d+) шт", parts[1])
             res = f"{res}\nОсталось {matches[0]} SMS"
+    return res
+
+
+def get_number_info(driver: WebDriver, number: str, url: str) -> str:
+    res = f"Номер <b>{number}:</b>\n"
+    driver.get(url)
+    # Ждём загрузки страницы
+    # time.sleep(30)
+    # WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
+    res = res + get_data(driver, number)
     return res
 
 
@@ -92,13 +97,12 @@ try:
     b.click()
 
     # Ждём загрузки страницы
-    time.sleep(30)
+    # time.sleep(30)
     # user_info = EC.presence_of_element_located((By.XPATH,"//div[contains(@class,'user-name')]"))
     # WebDriverWait(webdriver, args.wait).until(user_info)
 
-
-    message = get_accums("+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
-    message = message + "\n\n" + get_accums("+7 964-296-7425", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
+    message = get_number_info(webdriver, "+7 964-296-7425", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
+    message = message + "\n\n" + get_number_info(webdriver, "+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
 
 
 except Exception as e:
