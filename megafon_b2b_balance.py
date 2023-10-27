@@ -32,14 +32,39 @@ parser.add_argument("-w", "--wait", dest="wait", required=False, type=int, defau
 args = parser.parse_args()
 
 
-def send_to_tg(chat_id: int, text: str):
+def send_to_tg(chat_id: int, text: str, buttons: list = None):
     logger.debug(f"Отправляем в чат {chat_id} сообщение: {text}")
-    json_data = {
-        'chat_id': chat_id,
-        'text': text,
-        'parse_mode': 'html'
-    }
-    requests.post('https://api.telegram.org/bot' + args.bot_token + '/sendMessage', json=json_data)
+    if buttons is None:
+        json_data = {
+            'chat_id': chat_id,
+            'text': text,
+            'parse_mode': 'html'
+        }
+    else:
+        keyboard = []
+        for b in buttons:
+            keyboard.append({"text":b[0], "url":b[1]})
+        json_data = {
+            'chat_id': chat_id,
+            'text': text,
+            'parse_mode': 'html',
+            'reply_markup': {
+                'inline_keyboard':[keyboard]
+            }
+        }
+        # keyboard = "reply_markup": {
+        #     "inline_keyboard": [
+        #         [
+        #             {
+        #                 "text": "🔷Присоединиться 🔷",
+        #                 "url": "https://t.me/+E8-QWE1QMAQ1ZGUy"
+        #             }
+        #         ]
+        #     ]
+        # }
+    response = requests.post('https://api.telegram.org/bot' + args.bot_token + '/sendMessage', json=json_data)
+    logger.debug(response.text)
+
 
 def create_web_driver() -> WebDriver:
     options = webdriver.FirefoxOptions()
@@ -82,7 +107,6 @@ def get_info(driver: WebDriver) -> str:
     """
     return message
 
-
 try:
     driver = create_web_driver()
 except Exception as e:
@@ -117,7 +141,7 @@ if args.debug:
     print(message)
 
 try:
-    send_to_tg(args.chat_id, message)
+    send_to_tg(args.chat_id, message, [('Перейти в ЛК', 'https://b2blk.megafon.ru/login')])
 except Exception as e:
     logger.error(f'Error while sending to telegram: {str(e)}')
     quit(-3)
