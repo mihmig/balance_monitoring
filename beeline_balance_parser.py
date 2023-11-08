@@ -43,14 +43,11 @@ def send_to_tg(chat_id: int, text: str):
     requests.post('https://api.telegram.org/bot' + args.bot_token + '/sendMessage', json=json_data)
 
 
-@retry(stop_max_attempt_number=10, wait_fixed=5000)
+@retry(stop_max_attempt_number=3, wait_fixed=5000)
 def get_data(driver: WebDriver, number: str) -> str:
     res = ""
     items = webdriver.find_elements(By.XPATH, '//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
-    if len(items) < 2:
-        webdriver.save_screenshot(datetime.now().strftime("%Y-%d-%m_%H-%M-%S") + ".png")
-        send_to_tg(47254369, f"Не удалось найти элементы с остатками для номера {number}")
-        quit(-4)
+
     for item in items:
         parts = item.text.split('\n')
         if "Мобильная связь" in parts[0]:
@@ -61,12 +58,12 @@ def get_data(driver: WebDriver, number: str) -> str:
             res = f"{res}\nОсталось {matches[0]} SMS"
     return res
 
-
+@retry(stop_max_attempt_number=10, wait_fixed=5000)
 def get_number_info(driver: WebDriver, number: str, url: str) -> str:
     res = f"Номер <b>{number}:</b>\n"
     driver.get(url)
-    # Ждём загрузки страницы
-    # time.sleep(30)
+    # Ждём загрузки всех элементов страницы
+    time.sleep(30)
     # WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
     res = res + get_data(driver, number)
     return res
