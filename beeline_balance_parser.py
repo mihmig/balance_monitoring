@@ -4,12 +4,11 @@
 import re
 import argparse
 import logging
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 
+from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.webdriver import WebDriver
 
-from selenium_helper import create_webdriver, make_screenshot
+from selenium_helper import SeleniumHelper
 from telegram_helper import TelegramHelper
 
 logging.basicConfig(level=logging.DEBUG)
@@ -28,7 +27,7 @@ parser.add_argument("-d", "--debug", action='store_true', dest="debug", required
 parser.add_argument("-w", "--wait", dest="wait", required=False, type=int, default=10,
                     help="Wait timeout in seconds (default: 10)")
 args = parser.parse_args()
-thelper = TelegramHelper({'bot_token': args.bot_token})
+tg_helper = TelegramHelper({'bot_token': args.bot_token})
 
 
 def get_accums(driver: WebDriver) -> dict:
@@ -60,14 +59,8 @@ def get_number_info(driver: WebDriver, number: str, url: str) -> str:
     return res
 
 
-try:
-    webdriver = create_webdriver({'headless': args.headless})
-except Exception as e:
-    thelper.send_message(47254369, f'{__file__}: Error while creating webdriver: {str(e)}')
-    logger.error(e)
-    if webdriver is not None:
-        webdriver.quit()
-    quit(-1)
+selenium_helper = SeleniumHelper({'headless': args.headless}, tg_helper)
+webdriver = selenium_helper.get_driver();
 
 try:
     webdriver.get("https://my.beeline.ru/login.xhtml")
@@ -77,10 +70,6 @@ try:
     passwordElement.send_keys(args.password)
     b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
     b.click()
-    # Проверка успешной аутентификации
-    # blocks = webdriver.find_elements(By.XPATH, "//div[contains(@class,'user-name')]")
-    # if len(blocks) == 0:
-    #     raise ValueError("Не удалось войти в личный кабинет")
     block = webdriver.find_element(By.XPATH, "//div[contains(@class,'user-name')]")
 
     numbers = {
@@ -96,19 +85,17 @@ try:
     message = "\n\n".join(result_list)
 
 except Exception as e:
-    thelper.send_message(47254369, f'{__file__}: Error while working with webdriver: {str(e)}')
-    make_screenshot(webdriver)
-    webdriver.quit()
+    tg_helper.send_message(47254369, f'{__file__}: Error while working with webdriver: {str(e)}')
+    screenshot_file_name = selenium_helper.make_screenshot()
+    logger.error(screenshot_file_name)
     quit(-2)
 
 if args.debug:
     print(message)
 
 try:
-    thelper.send_message(args.chat_id, message)
+    tg_helper.send_message(args.chat_id, message)
 except Exception as e:
     print(f'Error while sending to telegram: {str(e)}')
     webdriver.quit()
     quit(-3)
-
-webdriver.quit()

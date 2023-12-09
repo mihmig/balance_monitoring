@@ -8,12 +8,26 @@ class TelegramHelper:
     def __del__(self):
         print("TelegramHelper: destructuring")
 
-    def send_message(self, chat_id: int, text: str, ) -> int:
-        json_data = {
-            'chat_id': chat_id,
-            'text': text,
-            'parse_mode': 'html'
-        }
+    def send_message(self, chat_id: int, text: str, buttons: list = None) -> int:
+        if buttons is None:
+            json_data = {
+                'chat_id': chat_id,
+                'text': text,
+                'parse_mode': 'html'
+            }
+        else:
+            keyboard = list(map(lambda b: {"text": b[0], "url": b[1]}, buttons))
+            # keyboard = []
+            # for b in buttons:
+            #     keyboard.append({"text": b[0], "url": b[1]})
+            json_data = {
+                'chat_id': chat_id,
+                'text': text,
+                'parse_mode': 'html',
+                'reply_markup': {
+                    'inline_keyboard': [keyboard]
+                }
+            }
         response = requests.post(f'https://api.telegram.org/bot{self.token}/sendMessage', json=json_data)
         if response.status_code != 200:
             raise ValueError(f'Ошибка отправки сообщения в Телеграм: {response.status_code} {response.text}')
