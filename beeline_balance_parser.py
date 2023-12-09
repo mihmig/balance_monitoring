@@ -1,19 +1,16 @@
 # Вход в ЛК Beeline и получение информации об остатках минут и СМС.
 # Отправка полученной информации в Телеграм
 
-import os
 import re
-import time
-import temp
 import argparse
-import requests
-from datetime import datetime
 import logging
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
-from retrying import retry
+
 from selenium.webdriver.firefox.webdriver import WebDriver
+
+from selenium_helper import create_webdriver, make_screenshot
+from telegram_helper import TelegramHelper
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -31,91 +28,84 @@ parser.add_argument("-d", "--debug", action='store_true', dest="debug", required
 parser.add_argument("-w", "--wait", dest="wait", required=False, type=int, default=10,
                     help="Wait timeout in seconds (default: 10)")
 args = parser.parse_args()
+thelper = TelegramHelper({'bot_token': args.bot_token})
 
 
-def send_to_tg(chat_id: int, text: str):
-    logger.debug(f"Отправляем в чат {chat_id} сообщение: {text}")
-    json_data = {
-        'chat_id': chat_id,
-        'text': text,
-        'parse_mode': 'html'
-    }
-    requests.post('https://api.telegram.org/bot' + args.bot_token + '/sendMessage', json=json_data)
-
-
-@retry(stop_max_attempt_number=3, wait_fixed=5000)
-def get_data(driver: WebDriver, number: str) -> str:
-    res = ""
-    items = webdriver.find_elements(By.XPATH, '//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
-
+def get_accums(driver: WebDriver) -> dict:
+    items = driver.find_elements(By.XPATH, '//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
+    accums = {}
     for item in items:
         parts = item.text.split('\n')
         if "Мобильная связь" in parts[0]:
             matches = re.findall(r"\D(\d+) мин", parts[1])
-            res = f"{res}\nОсталось {matches[0]} мин."
+            if len(matches):
+                accums['minutes'] = matches[0]
         if "SMS" in parts[0]:
             matches = re.findall(r"\D(\d+) шт", parts[1])
-            res = f"{res}\nОсталось {matches[0]} SMS"
-    return res
+            if len(matches):
+                accums['sms'] = matches[0]
+    return accums
 
-@retry(stop_max_attempt_number=10, wait_fixed=5000)
+
 def get_number_info(driver: WebDriver, number: str, url: str) -> str:
-    res = f"Номер <b>{number}:</b>\n"
-    driver.get(url)
-    # Ждём загрузки всех элементов страницы
-    time.sleep(30)
-    # WebDriverWait(webdriver, args.wait).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'status-block')]")))
-    res = res + get_data(driver, number)
+    attempts = 0
+    accums = []
+    while len(accums) == 0 and attempts < 5:
+        driver.get(url)
+        accums = get_accums(driver)
+        attempts += 1
+    if len(accums) == 0:
+        raise ValueError(f'Не удалось извлечь информацию об остатках для номера {number}')
+    res = f"Номер <b>{number}:</b>\nОсталось {accums['minutes']} мин.\nОсталось {accums['sms']} SMS"
     return res
 
 
 try:
-    options = webdriver.FirefoxOptions()
-    if args.headless:
-        options.add_argument('--headless')
-    options.add_argument("--width=1240")
-    options.add_argument("--height=900")
-    driverService = Service(log_path=os.path.devnull)
-    webdriver = webdriver.Firefox(options=options, service=driverService)
-    webdriver.implicitly_wait(args.wait)  # Время ожидания загрузки страницы, поиска элементов
+    webdriver = create_webdriver({'headless': args.headless})
 except Exception as e:
-    send_to_tg(47254369, f'{__file__}: Error while creating webdriver: {str(e)}')
+    thelper.send_message(47254369, f'{__file__}: Error while creating webdriver: {str(e)}')
+    logger.error(e)
+    webdriver.quit()
     quit(-1)
 
 try:
-
     webdriver.get("https://my.beeline.ru/login.xhtml")
-
     loginElement = webdriver.find_element(By.ID, "loginFormB2C:loginForm:login")
     loginElement.send_keys(args.login)
     passwordElement = webdriver.find_element(By.ID, "loginFormB2C:loginForm:passwordPwd")
     passwordElement.send_keys(args.password)
     b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
     b.click()
+    # Проверка успешной аутентификации
+    blocks = webdriver.find_elements(By.XPATH, "//div[contains(@class,'user-name')]")
+    if len(blocks) == 0:
+        raise ValueError("Не удалось войти в личный кабинет")
+    numbers = {
+        "+7 964-296-7425": "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686",
+        "+7 963-200-4377": "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140"
+    }
 
-    # Ждём загрузки страницы
-    # time.sleep(30)
-    # user_info = EC.presence_of_element_located((By.XPATH,"//div[contains(@class,'user-name')]"))
-    # WebDriverWait(webdriver, args.wait).until(user_info)
+    result_list = list()
+    for number, url in (numbers.items()):
+        print(number, "->", url)
+        result_list.append(get_number_info(webdriver, number, url))
 
-    message = get_number_info(webdriver, "+7 964-296-7425", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686")
-    message = message + "\n\n" + get_number_info(webdriver, "+7 963-200-4377", "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140")
-
+    message = "\n\n".join(result_list)
 
 except Exception as e:
-    send_to_tg(47254369, f'{__file__}: Error while working with webdriver: {str(e)}')
-    temp_image_file = temp.tempfile() + ".png"
-    webdriver.save_screenshot(temp_image_file)
-    print(f'screenshot saved to {temp_image_file}')
+    thelper.send_message(47254369, f'{__file__}: Error while working with webdriver: {str(e)}')
+    make_screenshot(webdriver)
+    webdriver.quit()
     quit(-2)
+
 if args.debug:
     print(message)
 
-
 try:
-    send_to_tg(args.chat_id, message)
+    thelper.send_message(args.chat_id, message)
 except Exception as e:
     print(f'Error while sending to telegram: {str(e)}')
+    webdriver.quit()
     quit(-3)
 
-webdriver.close()
+webdriver.quit()
