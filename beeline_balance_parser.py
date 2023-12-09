@@ -65,7 +65,8 @@ try:
 except Exception as e:
     thelper.send_message(47254369, f'{__file__}: Error while creating webdriver: {str(e)}')
     logger.error(e)
-    webdriver.quit()
+    if webdriver is not None:
+        webdriver.quit()
     quit(-1)
 
 try:

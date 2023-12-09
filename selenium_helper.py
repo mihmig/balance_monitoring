@@ -8,19 +8,20 @@ from selenium.webdriver.firefox.service import Service
 
 
 def create_webdriver(options: list) -> WebDriver:
-    webdriver_options = selenium.webdriver.FirefoxOptions()
+    driver_options = selenium.webdriver.FirefoxOptions()
     if options.get('headless'):
-        webdriver_options.add_argument('--headless')
-    webdriver_options.add_argument("--width=1240")
-    webdriver_options.add_argument("--height=900")
-    driver_service = Service(log_path=os.path.devnull)
-    webdriver = selenium.webdriver.Firefox(options=webdriver_options, service=driver_service)
+        driver_options.add_argument('--headless')
+    driver_options.add_argument("--width=1240")
+    driver_options.add_argument("--height=900")
+    driver_service = selenium.webdriver.FirefoxService(log_path=os.path.devnull)
+    driver = selenium.webdriver.Firefox(options=driver_options, service=driver_service)
     # Время ожидания загрузки страницы, поиска элементов
-    webdriver.implicitly_wait(30)
-    return webdriver
+    driver.implicitly_wait(30)
+    return driver
 
 
-def make_screenshot(webdriver1: WebDriver):
+def make_screenshot(driver: WebDriver) -> str:
     temp_image_file = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f") + ".png"
-    webdriver1.save_screenshot(temp_image_file)
+    driver.save_screenshot(temp_image_file)
     print(f'screenshot saved to {temp_image_file}')
+    return temp_image_file
