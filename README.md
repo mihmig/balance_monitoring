@@ -11,10 +11,9 @@ https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04
  cd /projects 
  git clone git@github.com:mihmig/balance_monitoring.git
  cd balance_monitoring/
- mkdir ~/.venv
- cd ~/.venv
- python3 -m venv ~/.venv
- source ~/.venv/bin/activate
+ mkdir .venv
+ python3 -m venv .venv
+ source /projects/balance_monitoring/.venv/bin/activate
  pip3 install -r requirements.txt
  ```
 

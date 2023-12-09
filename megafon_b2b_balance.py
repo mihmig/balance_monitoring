@@ -54,7 +54,7 @@ def get_info(driver: WebDriver) -> str:
     expenses_period = driver.find_element(By.XPATH, '//div[contains(@class,"widget__date-range")]').text
     expenses_total = driver.find_element(By.XPATH, '//li[contains(@class,"react-multi-carousel-item--active")]//div[contains(@class,"chart-pie__diagram")]//span[contains(@class,"chart__title")]').text
 
-    legend = driver.find_elements(By.XPATH, '//li[contains(@class,"react-multi-carousel-item--active")]//div[contains(@class, "chart-pie__legendzzz")]')
+    legend = driver.find_elements(By.XPATH, '//li[contains(@class,"react-multi-carousel-item--active")]//div[contains(@class, "chart-pie__legend")]')
     if len(legend):
         analytics = legend[0].text
     else:
