@@ -78,9 +78,11 @@ try:
     b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
     b.click()
     # Проверка успешной аутентификации
-    blocks = webdriver.find_elements(By.XPATH, "//div[contains(@class,'user-name')]")
-    if len(blocks) == 0:
-        raise ValueError("Не удалось войти в личный кабинет")
+    # blocks = webdriver.find_elements(By.XPATH, "//div[contains(@class,'user-name')]")
+    # if len(blocks) == 0:
+    #     raise ValueError("Не удалось войти в личный кабинет")
+    block = webdriver.find_element(By.XPATH, "//div[contains(@class,'user-name')]")
+
     numbers = {
         "+7 964-296-7425": "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686",
         "+7 963-200-4377": "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140"

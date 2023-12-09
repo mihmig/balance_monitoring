@@ -4,8 +4,6 @@ import selenium
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.firefox.webdriver import WebDriver
-from selenium.webdriver.firefox.service import Service
-
 
 def create_webdriver(options: list) -> WebDriver:
     driver_options = selenium.webdriver.FirefoxOptions()
