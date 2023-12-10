@@ -27,19 +27,20 @@ class SeleniumHelper:
         except Exception as e:
             tg_helper.send_message(47254369, f'{__file__}: Error while creating webdriver: {str(e)}')
             self.logger.error(e)
-            if webdriver is not None:
-                webdriver.quit()
+            if self.driver is not None:
+                self.driver.quit()
             quit(-1)
 
     def __del__(self):
         if self.driver is not None:
+            print("SeleniumHelper: closing")
             self.driver.quit()
 
     def get_driver(self) -> WebDriver:
         return self.driver
 
     def make_screenshot(self) -> str:
-        temp_image_file = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f") + ".png"
+        temp_image_file = 'data/' + datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f") + ".png"
         self.driver.save_screenshot(temp_image_file)
         self.logger.info(f'screenshot saved to {temp_image_file}')
         return temp_image_file

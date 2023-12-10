@@ -6,7 +6,7 @@ class TelegramHelper:
         self.token = config['bot_token']
 
     def __del__(self):
-        print("TelegramHelper: destructuring")
+        print("TelegramHelper: closing")
 
     def send_message(self, chat_id: int, text: str, buttons: list = None) -> int:
         if buttons is None:
