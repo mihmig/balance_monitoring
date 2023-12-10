@@ -30,7 +30,8 @@ db_config = {
         """
             CREATE TABLE IF NOT EXISTS balance (
                 phone TEXT PRIMARY KEY,
-                balance REAL
+                balance REAL,
+                expenses REAL
             );
         """
     ]
@@ -74,21 +75,20 @@ def get_info(driver: WebDriver) -> BalanceData:
 try:
     login(webdriver, config)
     balance_data = get_info(webdriver)
-    balance = re.sub(r'[^\d\.-]', '', balance_data.current_balance.replace(',', '.'))
-
+    expenses = re.sub(r'[^\d\.-]', '', balance_data.expenses.replace(',', '.'))
 
     info = db.get_line("SELECT * FROM balance WHERE phone = ?", [config['login']])
     if info is None:
-        db.execute("INSERT INTO balance (phone, balance) VALUES(?,?)", [config['login'], balance])
+        db.execute("INSERT INTO balance (phone, expenses) VALUES(?, ?)", [config['login'], expenses])
         delta = ""
     else:
-        delta = " (" + str(round(float(balance) - info['balance'],2)) + ")"
-        db.execute("UPDATE balance SET balance = ? WHERE phone = ?", [balance, config['login']])
+        delta = " (" + str(round(float(expenses) - info['expenses'], 2)) + ")"
+        db.execute("UPDATE balance SET balance = ? WHERE phone = ?", [expenses, config['login']])
 
     message = f"""Баланс лицевого счета на {balance_data.current_moment}
-    {balance_data.current_balance}{delta}
+    {balance_data.current_balance}
     Расходы {balance_data.expenses_period}
-    {balance_data.expenses}
+    {balance_data.expenses}{delta}
     
     {balance_data.legend}"""
 
