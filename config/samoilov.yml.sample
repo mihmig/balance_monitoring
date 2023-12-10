@@ -1,0 +1,7 @@
+login: 9211112233
+password: password
+login_url: https://b2blk.megafon.ru/soho/login
+chat_id: -4008386413
+bot_token: '1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+timeout: 30
+headless: true
