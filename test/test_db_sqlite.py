@@ -20,10 +20,10 @@ db_config = {
 db = Db(db_config)
 current_balance = '-468,450 ₽'
 balance = re.sub(r'[^\d\.-]','', current_balance.replace(',', '.'))
-info = db.get_line("SELECT * FROM balance WHERE phone = ?", [config['phone']])
+info = db.get_line("SELECT * FROM balance WHERE phone = ?", [config['login']])
 if info is None:
-    db.execute("INSERT INTO balance (phone, balance) VALUES(?,?)", [config['phone'], balance])
+    db.execute("INSERT INTO balance (phone, balance) VALUES(?,?)", [config['login'], balance])
 else:
     delta = float(balance) - info['balance']
     print(delta)
-    db.execute("UPDATE balance SET balance = ? WHERE phone = ?", [balance, config['phone'] ])
+    db.execute("UPDATE balance SET balance = ? WHERE phone = ?", [balance, config['login'] ])
