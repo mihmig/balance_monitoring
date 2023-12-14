@@ -83,7 +83,7 @@ try:
         delta = ""
     else:
         delta = " (" + str(round(float(expenses) - info['expenses'], 2)) + ")"
-        db.execute("UPDATE balance SET balance = ? WHERE phone = ?", [expenses, config['login']])
+        db.execute("UPDATE balance SET expenses = ? WHERE phone = ?", [expenses, config['login']])
 
     message = f"""Баланс лицевого счета на {balance_data.current_moment}
     {balance_data.current_balance}
