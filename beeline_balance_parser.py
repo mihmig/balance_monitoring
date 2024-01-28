@@ -4,6 +4,7 @@
 import re
 import argparse
 import logging
+import html
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.webdriver import WebDriver
@@ -64,11 +65,11 @@ webdriver = selenium_helper.get_driver();
 
 try:
     webdriver.get("https://my.beeline.ru/login.xhtml")
-    loginElement = webdriver.find_element(By.ID, "loginFormB2C:loginForm:login")
+    loginElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:login")
     loginElement.send_keys(args.login)
-    passwordElement = webdriver.find_element(By.ID, "loginFormB2C:loginForm:passwordPwd")
+    passwordElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:passwordPwd")
     passwordElement.send_keys(args.password)
-    b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2C') and not(contains(@style, 'none'))]/span")
+    b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2B') and not(contains(@style, 'none'))]/span")
     b.click()
     block = webdriver.find_element(By.XPATH, "//div[contains(@class,'user-name')]")
 
@@ -85,7 +86,7 @@ try:
     message = "\n\n".join(result_list)
 
 except Exception as e:
-    tg_helper.send_message(47254369, f'{__file__}: Error while working with webdriver: {str(e)}')
+    tg_helper.send_message(47254369, f'{__file__}: Error while working with webdriver: {html.escape(str(e))}')
     screenshot_file_name = selenium_helper.make_screenshot()
     logger.error(screenshot_file_name)
     quit(-2)
