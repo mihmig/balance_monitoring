@@ -4,7 +4,7 @@
 import re
 import logging
 import sys
-
+import html
 import yaml
 
 from plugins.db_sqlite import Db
@@ -97,7 +97,7 @@ try:
 
     tg_helper.send_message(config['chat_id'], message, [('Перейти в ЛК', config['login_url'])])
 except Exception as e:
-    logger.error(f'Error while working with webdriver: {str(e)}')
+    logger.error(f'Error while working with webdriver: {html.escape(str(e))}')
     screenshot_file_name = selenium_helper.make_screenshot()
     logger.error(screenshot_file_name)
     quit(-2)

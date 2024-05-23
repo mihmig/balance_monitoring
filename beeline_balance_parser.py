@@ -6,6 +6,7 @@ import argparse
 import logging
 import html
 
+from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.webdriver import WebDriver
 
@@ -51,7 +52,10 @@ def get_number_info(driver: WebDriver, number: str, url: str) -> str:
     attempts = 0
     accums = []
     while len(accums) == 0 and attempts < 5:
-        driver.get(url)
+        try:
+            driver.get(url)
+        except TimeoutException:
+            pass
         accums = get_accums(driver)
         attempts += 1
     if len(accums) == 0:
@@ -61,16 +65,19 @@ def get_number_info(driver: WebDriver, number: str, url: str) -> str:
 
 
 selenium_helper = SeleniumHelper({'headless': args.headless}, tg_helper)
-webdriver = selenium_helper.get_driver();
+webdriver = selenium_helper.get_driver()
 
 try:
-    webdriver.get("https://my.beeline.ru/login.xhtml")
+    webdriver.get("https://my.beeline.ru/login.xhtml") # https://pro.beeline.ru/lk/?
     loginElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:login")
     loginElement.send_keys(args.login)
     passwordElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:passwordPwd")
     passwordElement.send_keys(args.password)
     b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2B') and not(contains(@style, 'none'))]/span")
-    b.click()
+    try:
+        b.click()
+    except TimeoutException:
+        pass
     block = webdriver.find_element(By.XPATH, "//div[contains(@class,'user-name')]")
 
     numbers = {
