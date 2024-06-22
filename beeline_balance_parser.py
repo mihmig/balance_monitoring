@@ -5,10 +5,12 @@ import re
 import argparse
 import logging
 import html
+import time
 
 from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.webdriver import WebDriver
+from retrying import retry
 
 from selenium_helper import SeleniumHelper
 from telegram_helper import TelegramHelper
@@ -31,6 +33,28 @@ parser.add_argument("-w", "--wait", dest="wait", required=False, type=int, defau
 args = parser.parse_args()
 tg_helper = TelegramHelper({'bot_token': args.bot_token})
 
+@retry(stop_max_attempt_number=3, wait_fixed=10000)
+def login():
+    webdriver.get("https://my.beeline.ru/login.xhtml")
+    loginElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:login")
+    loginElement.send_keys(args.login)
+    passwordElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:passwordPwd")
+    passwordElement.send_keys(args.password)
+    b = webdriver.find_element(By.XPATH,
+                               "//button[contains(@id,'loginFormB2B') and not(contains(@style, 'none'))]/span")
+    try:
+        b.click()
+    except TimeoutException: # Иногда не прогружаются некоторые части страницы
+        pass
+
+    attempts = 0
+    element = None
+    while element is None and attempts < 5:
+        try:
+            element = webdriver.find_element(By.XPATH, "//div[contains(@class,'user-name')]")
+        except Exception:
+            attempts += 1
+            time.sleep(5)
 
 def get_accums(driver: WebDriver) -> dict:
     items = driver.find_elements(By.XPATH, '//div[contains(@class ,"bonuses-accums-list")]/div[contains(@class, "accum-restyle")]')
@@ -64,22 +88,15 @@ def get_number_info(driver: WebDriver, number: str, url: str) -> str:
     return res
 
 
-selenium_helper = SeleniumHelper({'headless': args.headless}, tg_helper)
+selenium_helper = SeleniumHelper({
+                                        'headless': args.headless,
+                                        'wait': args.wait
+                                 },
+                                 tg_helper)
 webdriver = selenium_helper.get_driver()
 
 try:
-    webdriver.get("https://my.beeline.ru/login.xhtml") # https://pro.beeline.ru/lk/?
-    loginElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:login")
-    loginElement.send_keys(args.login)
-    passwordElement = webdriver.find_element(By.ID, "loginFormB2B:loginForm:passwordPwd")
-    passwordElement.send_keys(args.password)
-    b = webdriver.find_element(By.XPATH, "//button[contains(@id,'loginFormB2B') and not(contains(@style, 'none'))]/span")
-    try:
-        b.click()
-    except TimeoutException:
-        pass
-    block = webdriver.find_element(By.XPATH, "//div[contains(@class,'user-name')]")
-
+    login();
     numbers = {
         "+7 964-296-7425": "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3445773686",
         "+7 963-200-4377": "https://my.beeline.ru/b/info/subscriberDetail.xhtml?objId=3323431140"

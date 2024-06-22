@@ -13,7 +13,8 @@ class TelegramHelper:
             json_data = {
                 'chat_id': chat_id,
                 'text': text,
-                'parse_mode': 'html'
+                'parse_mode': 'html',
+                'disable_web_page_preview': True
             }
         else:
             keyboard = list(map(lambda b: {"text": b[0], "url": b[1]}, buttons))
