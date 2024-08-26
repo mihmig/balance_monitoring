@@ -1,6 +1,7 @@
 # Вход в ЛК Beeline и получение информации об остатках минут и СМС.
 # Отправка полученной информации в Телеграм
-
+# options.add_argument(f"user-data-dir=YOUR_PATH_PROFILE_CHROME") # Путь до профиля можно найти введя в адресную строку Chrome - chrome://version/
+# driver = webdriver.Chrome(executable_path='YOUR_PATH_CHROMEDRIVER', chrome_options=options) # путь до chromedriver
 import re
 import argparse
 import logging
