@@ -1,0 +1,8 @@
+GET https://api.telegram.org/bot{{bot_token}}/getUpdates
+Accept: application/json
+
+### Отправка сообщения
+POST https://api.telegram.org/bot{{bot_token}}/sendmessage?chat_id=47254369&text=TEST1
+
+### Отправка сообщения в группу
+POST https://api.telegram.org/bot{{bot_token}}/sendmessage?chat_id=-654299108&text=TEST1

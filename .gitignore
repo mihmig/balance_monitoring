@@ -4,3 +4,4 @@ __pycache__/
 config/*.yml
 data/*.db
 data/*.png
+firefox_profile

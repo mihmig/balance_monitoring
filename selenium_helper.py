@@ -1,5 +1,5 @@
 # Вспомогательный класс для работы с библиотекой Selenium
-import logging
+# https://github.com/mozilla/geckodriver/releases
 import os
 import selenium
 from datetime import datetime
@@ -7,29 +7,22 @@ from selenium import webdriver
 from selenium.webdriver.firefox.webdriver import WebDriver
 
 from telegram_helper import TelegramHelper
+from selenium.webdriver.firefox.options import Options
 
 
 class SeleniumHelper:
-    def __init__(self, options: dict, tg_helper: TelegramHelper = None):
-        self.options = options #config['bot_token']
-        self.tg_helper = tg_helper
-        self.logger = logging.getLogger(__name__)
-        try:
-            driver_options = selenium.webdriver.FirefoxOptions()
-            if options.get('headless'):
-                driver_options.add_argument('--headless')
-            driver_options.add_argument("--width=1240")
-            driver_options.add_argument("--height=900")
-            driver_service = selenium.webdriver.FirefoxService(log_path=os.path.devnull)
-            self.driver = selenium.webdriver.Firefox(options=driver_options, service=driver_service)
-            # Время ожидания загрузки страницы, поиска элементов
-            self.driver.implicitly_wait(options.get('wait') or 30)
-        except Exception as e:
-            tg_helper.send_message(47254369, f'{__file__}: Error while creating webdriver: {str(e)}')
-            self.logger.error(e)
-            if self.driver is not None:
-                self.driver.quit()
-            quit(-1)
+    def __init__(self):
+        options = Options()
+        options.add_argument(f"--width={os.getenv('WIDTH', 1240)}")
+        options.add_argument(f"--height={os.getenv('HEIGHT', 900)}")
+        options.add_argument("-profile")
+        # Указываем путь для хранения профиля
+        options.add_argument(os.path.abspath(r".\firefox_profile"))
+        if os.getenv('HEADLESS'):
+            options.add_argument('--headless')
+        driver_service = selenium.webdriver.FirefoxService(log_path=os.path.devnull)
+        self.driver = selenium.webdriver.Firefox(options=options, service=driver_service)
+        self.driver.implicitly_wait(30)
 
     def __del__(self):
         if self.driver is not None:

@@ -1,9 +1,12 @@
+import os
+from pydoc import html
+
 import requests
 
 
 class TelegramHelper:
-    def __init__(self, config):
-        self.token = config['bot_token']
+    def __init__(self):
+        self.token = os.environ['TELEGRAM_BOT_TOKEN']
 
     def __del__(self):
         print("TelegramHelper: closing")
@@ -12,9 +15,8 @@ class TelegramHelper:
         if buttons is None:
             json_data = {
                 'chat_id': chat_id,
-                'text': text,
-                'parse_mode': 'html',
-                'disable_web_page_preview': True
+                'text': html.escape(text),
+                'parse_mode': 'html'
             }
         else:
             keyboard = list(map(lambda b: {"text": b[0], "url": b[1]}, buttons))
