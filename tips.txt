@@ -1,3 +1,9 @@
+# attempts = 0
+# while balance == '' and attempts < 5:
+#     balance = driver.find_element(By.XPATH, "//div[@data-qa-type='balance-value']//span[contains(text(), ',') and contains(text(), '₽')]").text
+#     attempts += 1
+#     sleep(1)
+
 # Поиск элемента по уникальному идентификатору (id)
  element = browser.find_element(By.ID, "some_id")
  # Поиск элемента или элементов, используя селекторы CSS

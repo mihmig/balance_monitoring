@@ -6,26 +6,23 @@ from selenium_helper import SeleniumHelper
 from telegram_helper import TelegramHelper
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from dotenv import load_dotenv
 
-telegram = TelegramHelper()
-selenium = SeleniumHelper()
+load_dotenv()
 
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', 1)
 TBANK_PIN = os.environ['TBANK_PIN']
+TBANK_ACCOUNT_NUMBER = os.environ['TBANK_ACCOUNT_NUMBER']
+
+telegram = TelegramHelper()
+selenium = SeleniumHelper()
 driver = selenium.get_driver()
 
-account_url = 'https://www.tbank.ru/mybank/accounts/debit/5402688633/'
-driver.get(account_url)
+driver.get(f'https://www.tbank.ru/mybank/accounts/debit/{TBANK_ACCOUNT_NUMBER}/')
 
 secret_code_input_list = driver.find_elements(By.XPATH, "//form[contains(@automation-id, 'pin-form')]/div//input")
 if len(secret_code_input_list) > 0:
     secret_code_input_list[0].send_keys(f'{TBANK_PIN}\ue007')
-
-# attempts = 0
-# while balance == '' and attempts < 5:
-#     balance = driver.find_element(By.XPATH, "//div[@data-qa-type='balance-value']//span[contains(text(), ',') and contains(text(), '₽')]").text
-#     attempts += 1
-#     sleep(1)
 
 # Ждем появления элемента с текстом баланса
 balance_element = WebDriverWait(driver, 20).until(

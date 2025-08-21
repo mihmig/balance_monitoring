@@ -26,7 +26,6 @@ class SeleniumHelper:
 
     def __del__(self):
         if self.driver is not None:
-            print("SeleniumHelper: closing")
             self.driver.quit()
 
     def get_driver(self) -> WebDriver:

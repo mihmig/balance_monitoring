@@ -6,11 +6,14 @@ from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium_helper import SeleniumHelper
 from telegram_helper import TelegramHelper
+from dotenv import load_dotenv
+
+load_dotenv()
 
 telegram = TelegramHelper()
 selenium = SeleniumHelper()
 
-CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', 47254369)
+CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
 ALFA_PIN = os.environ['ALFA_PIN']
 driver = selenium.get_driver()
 

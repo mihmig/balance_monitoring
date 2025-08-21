@@ -8,9 +8,6 @@ class TelegramHelper:
     def __init__(self):
         self.token = os.environ['TELEGRAM_BOT_TOKEN']
 
-    def __del__(self):
-        print("TelegramHelper: closing")
-
     def send_message(self, chat_id: int, text: str, buttons: list = None) -> int:
         if buttons is None:
             json_data = {

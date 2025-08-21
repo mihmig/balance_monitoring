@@ -7,3 +7,4 @@ data/*.png
 firefox_profile
 geckodriver.exe
 http-client.private.env.json
+.env
