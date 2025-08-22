@@ -16,19 +16,21 @@ selenium = SeleniumHelper()
 CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
 driver = selenium.get_driver()
 
-url = 'https://azs.tatneft.ru/cabinet'
-driver.get(url)
+driver.get('https://azs.tatneft.ru/cabinet')
+driver.refresh()  # Необходимо обновлять страницу, иначе висит окно логина
 
 balance = ''
 balance = driver.find_element(By.XPATH, "//div[contains(@class, 'card__balance')]").text
 balance = balance.replace('\n', '')
 
-spent = driver.find_element(By.XPATH, "//div[@class='status' and .//div[@class='status__spend']]")
-spent_text = spent.text
+spent_period = driver.find_element(By.XPATH, "//div[@class='status']/span[contains(text(), 'Потрачено')]").text
+# spent = driver.find_element(By.XPATH, "//div[@class='status' and .//div[@class='status__spend']]")
+spent = driver.find_element(By.XPATH, "//div[@class='status']/div[@class='status__spend']")
+spent_sum = spent.text
 
 telegram.send_message(CHAT_ID, f"""🟢 Татнефть-бонусы
 Баланс: {balance}
-{spent}
+{spent_period}: {spent_sum}
 """)
 driver.quit()
 
