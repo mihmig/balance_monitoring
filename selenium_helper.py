@@ -16,7 +16,7 @@ class SeleniumHelper:
         options.add_argument(f"--height={os.getenv('HEIGHT', 900)}")
         options.add_argument("-profile")
         # Указываем путь для хранения профиля
-        options.add_argument(os.path.abspath(r".\firefox_profile"))
+        options.add_argument(os.path.abspath(r"./firefox_profile"))
         if os.getenv('HEADLESS'):
             options.add_argument('--headless')
         driver_service = selenium.webdriver.FirefoxService(log_path=os.path.devnull)

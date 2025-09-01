@@ -5,6 +5,7 @@ config/*.yml
 data/*.db
 data/*.png
 firefox_profile
+geckodriver
 geckodriver.exe
 http-client.private.env.json
 .env
