@@ -1,0 +1,20 @@
+import os
+import selenium
+from datetime import datetime
+from selenium import webdriver
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
+
+options = Options()
+options.add_argument(f"--width={os.getenv('WIDTH', 1240)}")
+options.add_argument(f"--height={os.getenv('HEIGHT', 900)}")
+options.add_argument("-profile")
+# Указываем путь для хранения профиля
+options.add_argument(os.path.abspath(r".\firefox_profile"))
+if os.getenv('HEADLESS') or os.name == 'posix':
+    options.add_argument('--headless')
+driver_service = selenium.webdriver.FirefoxService(log_path=os.path.devnull)
+driver = selenium.webdriver.Firefox(options=options, service=driver_service)
+driver.implicitly_wait(30)
+driver.get('https://ya.ru')
+driver.quit()

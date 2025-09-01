@@ -6,7 +6,6 @@ from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.firefox.webdriver import WebDriver
 
-from telegram_helper import TelegramHelper
 from selenium.webdriver.firefox.options import Options
 
 

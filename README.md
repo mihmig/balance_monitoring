@@ -6,6 +6,7 @@ https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04
 ### Установка на debian 12
  
  ``` bash
+ apt update
  apt install -y python3-venv firefox-esr
  mkdir /projects
  cd /projects 
@@ -13,9 +14,11 @@ https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04
  cd balance_monitoring/
  mkdir .venv
  python3 -m venv .venv
- source /projects/balance_monitoring/.venv/bin/activate
+ source .venv/bin/activate
  pip3 install -r requirements.txt
- ```
+   ```
+Скачать https://github.com/mozilla/geckodriver/releases
+
 
 ### Чаты
 
