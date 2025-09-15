@@ -11,11 +11,15 @@ https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04
  mkdir /projects
  cd /projects 
  git clone git@github.com:mihmig/balance_monitoring.git
+ git config advice.addIgnoredFile false
+ git config --global --add safe.directory ./balance_monitoring
  cd balance_monitoring/
  mkdir .venv
  python3 -m venv .venv
  source .venv/bin/activate
  pip3 install -r requirements.txt
+ pip install --upgrade selenium
+ HEADLESS=true python3 azs.tatneft.py
    ```
 Скачать https://github.com/mozilla/geckodriver/releases
 

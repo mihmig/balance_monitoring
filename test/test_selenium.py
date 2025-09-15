@@ -1,8 +1,6 @@
 import os
 import selenium
-from datetime import datetime
 from selenium import webdriver
-from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.options import Options
 
 options = Options()
