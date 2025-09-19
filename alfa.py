@@ -1,5 +1,6 @@
 # Получение баланса в ЛК Альфа-банка
 import os
+import re
 from time import sleep
 
 from selenium.webdriver import Keys
@@ -30,7 +31,7 @@ while balance == '' and attempts < 5:
     balance = driver.find_element(By.XPATH, "//span[contains(@data-test-id, 'common-balance-button-core-amount-title')]").text
     attempts += 1
     sleep(1)
-balance = balance.replace('\n', '')
+balance = int(float(re.sub(r'\D|\n', '', balance)) / 100)
 telegram.send_message(CHAT_ID, f"""🔴 Альфа-Банк
 Баланс: {balance}
 """)
