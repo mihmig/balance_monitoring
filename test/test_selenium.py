@@ -12,7 +12,7 @@ options.add_argument("--profile")
 #options.add_argument("/data/projects/balance_monitoring/firefox_profile")
 options.add_argument(os.path.abspath(r"./firefox_profile"))
 #if os.getenv('HEADLESS'):
-#    options.add_argument('--headless')
+options.add_argument('--headless')
 driver_service = selenium.webdriver.FirefoxService(log_path=os.path.devnull)
 driver = selenium.webdriver.Firefox(options=options, service=driver_service)
 driver.implicitly_wait(30)
