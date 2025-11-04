@@ -24,7 +24,6 @@ balance = driver.find_element(By.XPATH, "//div[contains(@class, 'card__balance')
 balance = balance.replace('\n', '')
 
 spent_period = driver.find_element(By.XPATH, "//div[@class='status']/span[contains(text(), 'Потрачено')]").text
-# spent = driver.find_element(By.XPATH, "//div[@class='status' and .//div[@class='status__spend']]")
 spent = driver.find_element(By.XPATH, "//div[@class='status']/div[@class='status__spend']")
 spent_sum = spent.text
 

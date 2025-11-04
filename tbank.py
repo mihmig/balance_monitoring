@@ -27,8 +27,6 @@ if len(secret_code_input_list) > 0:
 # Ждем появления элемента с текстом баланса
 balance_element = WebDriverWait(driver, 20).until(
     EC.presence_of_element_located(
-        # (By.XPATH, "//div[@data-qa-type='balance-value']//span[contains(text(), ',') and contains(text(), '₽')]"))
-        # (By.XPATH, "//a[contains(@href, '/mybank/accounts/debit')]//span[contains(text(), ',') and contains(text(), '₽')]"))
         (By.XPATH, "//span[contains(@data-schema-path,'accountBalance')]"))
 )
 
