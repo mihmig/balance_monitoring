@@ -6,12 +6,12 @@ import html
 from datetime import datetime
 from playwright.sync_api import sync_playwright, Page, TimeoutError as PlaywrightTimeoutError
 from retrying import retry
-
+from dotenv import load_dotenv
 from plugins.max_sender import MaxSender
 
 logger = logging.getLogger(__name__)
 TIMEOUT_MS = 10000
-
+load_dotenv()
 
 @retry(stop_max_attempt_number=3, wait_fixed=10000)
 def login(p_page: Page, p_login: str, p_password: str):
