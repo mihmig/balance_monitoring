@@ -10,14 +10,14 @@ options.add_argument(f"--width={os.getenv('WIDTH', '1240')}")
 options.add_argument(f"--height={os.getenv('HEIGHT', '900')}")
 
 # HEADLESS режим
-# if os.getenv('HEADLESS', '1') in ('1', 'true', 'True'):
-#     options.add_argument('--headless')
+if os.getenv('HEADLESS', '1') in ('1', 'true', 'True'):
+    options.add_argument('--headless')
 
 firefox_profile = webdriver.FirefoxProfile(os.path.abspath("./firefox_profile"))
 options.profile = firefox_profile
 
 # Лог драйвера
-service = Service(log_path=os.path.abspath("geckodriver.log"))
+service = Service(log_path=os.path.abspath("geckodriver.log"))  #, service_args=['--log', 'trace'])  # или 'debug'
 
 # Запуск браузера
 driver = webdriver.Firefox(options=options, service=service)

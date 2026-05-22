@@ -1,0 +1,59 @@
+### Получение информации о боте
+GET https://platform-api.max.ru/me
+Accept: application/json
+Authorization: {{max_bot_token}}
+
+
+### Получение списка всех групповых чатов
+GET https://platform-api.max.ru/chats
+Authorization: {{max_bot_token}}
+
+### Получение обновлений
+GET https://platform-api.max.ru/updates
+Authorization: {{max_bot_token}}
+
+> {% client.global.set("marker", response.body.marker); %}
+
+### Получение подписок (webhook-ов)
+GET https://platform-api.max.ru/subscriptions
+Authorization: {{max_bot_token}}
+
+
+### Отправить сообщение в группу/канал
+POST https://platform-api.max.ru/messages?chat_id={{max_chat_id}}
+Authorization: {{max_bot_token}}
+Content-Type: application/json
+
+{
+  "text": "Номер +7 964-296-7425:\nОсталось 250 мин.\nОсталось 158 SMS\n\nНомер +7 963-200-4377:\nОсталось 0 мин.\nОсталось 0 SMS"
+}
+
+
+### Отправить сообщение пользователю (mid.000000000b409dda019e4f398b54277e)
+POST https://platform-api.max.ru/messages?chat_id={{max_test_chat_id}}
+Authorization: {{max_bot_token}}
+Content-Type: application/json
+
+{
+  "text": "Номер +7 <b>964-296-7425</b>:\nОсталось 🟢 <b>250</b> мин.\nОсталось 🟢 <b>158</b> SMS\n\nНомер +7 <b>963-200-4377</b>:\nОсталось 🔴 <b>0</b> мин.\nОсталось 🔴 <b>0</b> SMS",
+  "format": "html"
+}
+
+### Удаление сообщения
+DELETE https://platform-api.max.ru/messages?message_id=mid.000000000b409dda019e4f398b54277e
+Authorization: {{max_bot_token}}
+
+
+### Загрузка файла - 1-й этап
+POST https://platform-api.max.ru/uploads?type=file
+Authorization: {{max_bot_token}}
+
+### "url": "https://fu.oneme.ru/api/upload.do?sig=TZ3-Bt9gWkX3D2_7XolE4jImGAIgrVP0ngp6oF_LtxUC0v9za2JpLVBlcgcdrS_D5n221Mf87YM1dpePYT1y6Q&expires=1779543329478&clientType=10&id=3633245382&userId=263608565"
+POST https://fu.oneme.ru/api/upload.do?sig=TZ3-Bt9gWkX3D2_7XolE4jImGAIgrVP0ngp6oF_LtxUC0v9za2JpLVBlcgcdrS_D5n221Mf87YM1dpePYT1y6Q&expires=1779543329478&clientType=10&id=3633245382&userId=263608565
+Authorization: {{max_bot_token}}
+
+< ./telegram.http
+
+
+###
+

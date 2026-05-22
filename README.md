@@ -38,3 +38,12 @@ https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04
 # profile.set_preference("browser.cache.memory.enable", True)
 # profile.set_preference("browser.cache.offline.enable", True)
 # profile.set_preference("network.cookie.cookieBehavior", 0)  # Принимать все cookies
+
+
+### playwright
+* cd /data/projects/balance_monitoring
+* source .venv/bin/activate
+* pip3 install playwright
+* playwright install
+* (На Windows C:\Users\user\AppData\Local\ms-playwright\ На Linux /root/.cache/ms-playwright/)
+* playwright install-deps (Alternatively, use apt:  apt-get install libgtk-4-1 

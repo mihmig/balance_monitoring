@@ -2,8 +2,7 @@
 __pycache__/
 .venv/
 config/*.yml
-data/*.db
-data/*.png
+data
 firefox_profile
 geckodriver
 geckodriver.exe
