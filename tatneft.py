@@ -42,6 +42,6 @@ class Tatneft:
 if __name__ == "__main__":
     tatneft = Tatneft({
         'user_data_dir': 'data/tatneft_me',
-        'headless': 'False'
+        'headless': 'True'
     })
     tatneft.do()
