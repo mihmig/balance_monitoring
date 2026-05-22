@@ -8,3 +8,4 @@ geckodriver
 geckodriver.exe
 http-client.private.env.json
 .env
+.vscode
