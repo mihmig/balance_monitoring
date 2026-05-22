@@ -23,12 +23,16 @@ https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04
    ```
 Скачать https://github.com/mozilla/geckodriver/releases
 
-
-### Чаты
+#### Установка playwright
+``` bash
+playwright install
+playwright install-deps
+```
+#### Чаты
 
 -654299108 "Романсы финансов"
 
-### Прочие настройки
+#### Прочие настройки
 
 # Создаём и настраиваем профиль
 # profile = FirefoxProfile(profile_path)

@@ -13,7 +13,7 @@ options.add_argument(f"--height={os.getenv('HEIGHT', '900')}")
 if os.getenv('HEADLESS', '1') in ('1', 'true', 'True'):
     options.add_argument('--headless')
 
-firefox_profile = webdriver.FirefoxProfile(os.path.abspath("./firefox_profile"))
+firefox_profile = webdriver.FirefoxProfile(os.path.abspath("./tatneft_me"))
 options.profile = firefox_profile
 
 # Лог драйвера

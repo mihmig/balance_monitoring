@@ -3,7 +3,7 @@ __pycache__/
 .venv/
 config/*.yml
 data
-firefox_profile
+data/tatneft_me
 geckodriver
 geckodriver.exe
 http-client.private.env.json

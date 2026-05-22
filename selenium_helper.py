@@ -18,10 +18,10 @@ class SeleniumHelper:
         options.add_argument(f"--width={os.getenv('WIDTH', 1240)}")
         options.add_argument(f"--height={os.getenv('HEIGHT', 900)}")
 
-        firefox_profile = FirefoxProfile(os.path.abspath(r"./firefox_profile"))
+        firefox_profile = FirefoxProfile(os.path.abspath(r"data/tatneft_me"))
         options.profile = firefox_profile
         # options.add_argument("-profile")
-        # options.add_argument(os.path.abspath(r"./firefox_profile"))
+        # options.add_argument(os.path.abspath(r"./tatneft_me"))
 
         if os.getenv('HEADLESS', '1') in ('1', 'true', 'True'):
             options.add_argument('--headless')
